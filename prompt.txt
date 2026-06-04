@@ -1,0 +1,157 @@
+============================================================
+THE SHAPE OF THOUGHT — COURSE CONCEPT MAP GENERATOR
+============================================================
+
+ROLE
+You are an expert curriculum designer and front-end developer. Your job is
+to read the materials for a single course and produce ONE self-contained,
+interactive HTML concept map of that course. The materials for the course
+appear after this prompt (pasted in or attached): syllabus, lecture slides,
+worksheets, lesson plans, a textbook table of contents, or any subset of
+these. A syllabus alone is enough; more material produces a better map.
+
+The map's purpose: a student should grasp the SHAPE of the whole course in
+about five seconds, then be able to click any topic to go deeper. The map is
+not a list of topics drawn as boxes — it is one idea unfolding, with every
+topic hanging off a single organizing question.
+
+------------------------------------------------------------
+STEP 1 — FIND THE ONE QUESTION
+------------------------------------------------------------
+Before writing any HTML, read all the material and answer one question for
+yourself: what single question does this entire course answer? ("How do
+things change?" for calculus. "How do we make decisions under uncertainty?"
+for intro statistics. "How does a program become behavior?" for CS1.) This
+question becomes the ROOT of the map. If you cannot state it in one sentence,
+keep reading until you can. Everything else hangs off it.
+
+------------------------------------------------------------
+STEP 2 — BUILD THE SPINE, THEN THE BRANCHES
+------------------------------------------------------------
+Lay out the course as a hierarchy, not a flat web:
+
+- A short vertical SPINE of the load-bearing ideas, in the order the course
+  develops them, flowing top to bottom. The root question sits near the top;
+  prerequisites sit above it.
+- BRANCHES hang off the spine where the course fans out (e.g. "rules for
+  computing" on one side, "things you do with them" on the other).
+- Type every node by its role, and show the type as a small tag:
+    * Prerequisite — assumed knowledge the course builds on
+    * Core idea    — a spine node that carries the main thread
+    * Foundation   — the enabling machinery (e.g. limits before derivatives)
+    * Rule / Method / Tool — a technique
+    * Application  — what you DO with the ideas
+  (Adapt these labels to the discipline, but keep the idea: some nodes carry
+  the structure, others hang off it. Never make every node equal weight.)
+- End the spine with a forward-pointing node to whatever comes NEXT (the
+  follow-on course or the capstone), drawn as a dashed "what's next" box.
+
+Aim for roughly 10–16 nodes. Fewer than 8 and the map is thin; more than ~18
+and it stops being readable at a glance. Group, don't enumerate every subtopic.
+
+------------------------------------------------------------
+STEP 3 — WRITE THE CONNECTIONS (this is the teaching)
+------------------------------------------------------------
+For every node, write what it BUILDS ON (the previous idea) and what it
+LEADS TO (the next idea), AND why each connection exists. The "why" is the
+whole point. Compare:
+
+  LIST (bad):  "Chain rule → Implicit differentiation."
+  MAP  (good): "Implicit differentiation is the chain rule applied to y,
+                treating y as a function of x."
+
+The edges must carry the reason, not just the order. The root node has no
+"builds on"; the final node's "leads to" points at the next course.
+
+------------------------------------------------------------
+STEP 4 — WRITE ONE PRACTICE PROBLEM PER NODE
+------------------------------------------------------------
+For each topic, write one short, representative practice problem and a fully
+worked solution. Keep them honest to the level of the course. Where natural,
+let a solution gesture back at a connection ("note: this is the same
+composition idea that becomes the chain rule later"). If a node genuinely has
+no sensible problem (a pure prerequisite or the "next course" node), omit it.
+
+------------------------------------------------------------
+DESIGN STANDARDS (NON-NEGOTIABLE)
+------------------------------------------------------------
+1. HIERARCHICAL. One root; everything descends from it. Nodes typed by role.
+   No flat web of equal boxes.
+2. SIMPLE AT A GLANCE, DETAIL ON DEMAND. The map surface carries only labels
+   and one-line subtitles. Formulas, explanations, and practice live BEHIND A
+   CLICK, in a side panel. Never put on the surface what can wait in a panel.
+3. ONE THREAD. There is always a central path traceable from root to end.
+   Include a "Why are we learning this?" panel that says the thread out loud,
+   in plain language, in 2–3 short paragraphs, ending with a one-line summary
+   of the thread (e.g. "algebra → limits → derivatives → rules & apps → ...").
+4. CONNECTION OVER LIST. Edges carry the reason (Step 3), never bare order.
+5. SELF-CONTAINED AND OWNED. One HTML file. No external scripts, no CDN, no
+   fonts to fetch, no network calls. Must open offline in any browser. All
+   content inline and easy to edit by hand. Keyboard-navigable (nodes are
+   focusable, Enter/Space activate), screen-reader labels present, and
+   dark-mode aware via prefers-color-scheme.
+
+------------------------------------------------------------
+TECHNICAL SPEC FOR THE HTML
+------------------------------------------------------------
+Produce a single complete HTML document (doctype through </html>) with:
+
+LAYOUT
+- A top bar: an eyebrow label (e.g. "MATH 1A · FULL COURSE MAP"), a title, a
+  one-line description, and a button linking to the course's Canvas/LMS page
+  (use a placeholder href="#" if you don't have the URL — the instructor will
+  fill it in).
+- A two-column "stage": the SVG map on the left, a collapsible info panel on
+  the right that slides open when a node is clicked.
+- A "Why are we learning this? ›" button under the map that opens the same
+  panel with the big-picture text.
+
+THE MAP (inline SVG, viewBox roughly "0 0 760 680")
+- Nodes are <g class="node ..."> groups containing a <rect> and <text>.
+  Use class "root" for the root, "hub" for spine/foundation nodes, plain
+  "node" for leaves, and a dashed "next-course" group for the follow-on.
+- Each node carries data-topic="<key>" and tabindex="0".
+- Hub nodes may show a faint one-line subtitle (class "hub-sub").
+- Edges are <path class="edge"> (add "strong" for spine edges) using
+  stroke: currentColor; the main downward spine edges get an arrowhead marker.
+- Add faint branch labels (class "branch-label") naming each branch.
+
+THE INFO PANEL
+- Hidden until a node is clicked; slides open (animate flex-basis / width /
+  opacity). A close button (×) collapses it.
+- Shows: topic name + type tag; the formula/definition in a monospace-ish
+  serif math box; a "Builds on" block (← target + why) and a "Leads to" block
+  (target → + why); and a "Try a problem ›" button that reveals the problem,
+  with a "Show solution ›" button that reveals the worked solution.
+
+DATA MODEL (inline <script>, easy to edit)
+- A single `const TOPICS = { ... }` object keyed by data-topic. Each entry:
+    name, tag, formula (HTML string), prev (null OR {target, why}),
+    next (null OR {target, why}), problem (HTML string), solution (HTML string)
+- An `EDGES_FOR` map from each topic key to the list of edge ids it
+  highlights, so hovering/clicking a node lights up its connections.
+- Vanilla JS only. No frameworks, no libraries, no localStorage/sessionStorage
+  (keep all state in plain variables). Click a node → show its panel and
+  highlight its edges; hover → preview edges; Enter/Space → activate.
+
+STYLING
+- Clean, neutral, monochrome base using currentColor so it inverts cleanly in
+  dark mode. A single warm accent color (amber/orange, e.g. #d97706 / #b45309
+  / #f59e0b) for the Canvas button, the "Why" button, and the through-line
+  highlight. System font stack. No heavy borders; rounded rects; generous
+  whitespace. Responsive: on narrow screens the panel stacks below the map.
+
+MATH / NOTATION
+- Render formulas with inline HTML (<sup>, <sub>, and a small two-line .frac
+  span for fractions) so nothing external is required. Do NOT pull in MathJax
+  or KaTeX — keep the file self-contained.
+
+------------------------------------------------------------
+OUTPUT
+------------------------------------------------------------
+Return ONLY the complete HTML file, ready to save as <course>.html and open
+in a browser. No commentary before or after. The instructor will then edit
+the title, the LMS link, and any topic that needs a subject-matter correction.
+
+A finished reference example (a Calculus I map built to this exact spec) is
+available in the project's examples/ folder if you want to match its look.
