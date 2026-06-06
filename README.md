@@ -36,15 +36,13 @@ Every map this project produces follows the same rules.
 
 **Self-contained and instructor-owned.** One HTML file, no external dependencies, works offline, and opens in any browser. All content lives inline so an instructor can edit it without tooling. The instructor owns the file.
 ## Repo layout
-README.md            this file
-
-prompt.txt           the generation prompt — paste it to an LLM with your course materials
-
-examples/
-
-  calc-1a.html       a finished map: Foothill College Math 1A (Calculus I)
-
-  README.md          a short note on the example and how it was made
+| File | Description |
+|------|-------------|
+| `README.md` | this file |
+| `prompt.txt` | the generation prompt — paste it to an LLM with your course materials |
+| `examples/` | |
+| `examples/calc-1a.html` | a finished map: Foothill College Math 1A (Calculus I) |
+| `examples/README.md` | a short note on the example and how it was made |
 ## Status
 Early release. The prompt and the single worked example (Calc 1A) are the starting point; expect both to improve. Feedback and additional course maps are welcome.
 
