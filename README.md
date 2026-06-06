@@ -11,12 +11,12 @@ The map is readable at a glance; details are one click away.
 ## How to use it
 You need access to a capable LLM (Claude works best, Free version is okay) and the materials for the course you want to map.
 
-Gather your course materials into one place — syllabus, lecture slides, worksheets, a lesson plan, a textbook table of contents, whatever you have. More context produces a better map, but a syllabus alone is enough to start.
-Open prompt.txt, copy the whole thing, and paste it to the model.
-Paste your course materials after the prompt (or attach them).
-The model returns a single HTML file.
-Check the file and make changes either by asking the LLM or by changing the HTML directly. 
-Upload the HTML to Canvas (Pages → insert as an HTML file or embed) and share the link.
+1. Gather your course materials into one place — syllabus, lecture slides, worksheets, a lesson plan, a textbook table of contents, whatever you have. More context produces a better map, but a syllabus alone is enough to start.
+2. Open prompt.txt, copy the whole thing, and paste it to the model.
+3. Paste your course materials after the prompt (or attach them).
+4. The model returns a single HTML file.
+5. Check the file and make changes either by asking the LLM or by changing the HTML directly.
+6. Upload the HTML to Canvas (Pages → insert as an HTML file or embed) and share the link.
 
 The map is meant to be edited. The model gives you a strong first draft; you are the subject-matter expert who makes it correct.
 ## Why
